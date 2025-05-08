@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const bcrypt = require("bcrypt");
 
 const authBasic = async (req, res, next) => {
   const auth = req.headers.authorization;
@@ -13,25 +14,31 @@ const authBasic = async (req, res, next) => {
     return res.status(400).json({ message: "Bad format" });
   }
 
-  const credentials = parts[1]; 
+  try {
+    const credentials = Buffer.from(parts[1], 'base64').toString('utf-8');
+    const [username, password] = credentials.split(':');
 
-  const separatorIndex = credentials.indexOf(":");
+    if (!username || !password) {
+      return res.status(400).json({ message: "Invalid credentials format" });
+    }
 
-  if (separatorIndex === -1) {
-    return res.status(400).json({ message: "Invalid credentials format" });
+    const user = await User.findOne({ username });
+
+    if (!user) {
+      return res.status(401).json({ message: "Wrong username or password" });
+    }
+
+    const validPassword = await bcrypt.compare(password, user.password);
+    if (!validPassword) {
+      return res.status(401).json({ message: "Wrong username or password" });
+    }
+
+    req.user = user;
+    next();
+  } catch (error) {
+    console.error("Auth error:", error);
+    return res.status(500).json({ message: "Authentication error" });
   }
-
-  const username = credentials.substring(0, separatorIndex);
-  const password = credentials.substring(separatorIndex + 1);
-
-  const user = await User.findOne({ username });
-
-  if (!user || user.password !== password) {
-    return res.status(401).json({ message: "Wrong username or password" });
-  }
-
-  req.user = user;
-  next();
 };
 
 module.exports = authBasic;

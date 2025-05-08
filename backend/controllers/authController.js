@@ -14,17 +14,21 @@ exports.register = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
-  const { email, password } = req.body;
-  const user = await User.findOne({ email });
-  if (!user) return res.status(404).json({ msg: "User not found" });
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ msg: "User not found" });
 
-  const valid = await bcrypt.compare(password, user.password);
-  if (!valid) return res.status(401).json({ msg: "Wrong password" });
+    const valid = await bcrypt.compare(password, user.password);
+    if (!valid) return res.status(401).json({ msg: "Wrong password" });
 
-  req.session.user = { id: user._id, role: user.role };
-
-  const token = jwt.sign({ id: user._id }, "jwtsecret", { expiresIn: "2h" });
-  res.json({ msg: "Logged in", token });
+    req.session.user = { id: user._id, role: user.role };
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "2h" });
+    res.json({ msg: "Logged in", token });
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({ msg: "Login failed", error: error.message });
+  }
 };
 
 exports.logout = (req, res) => {
