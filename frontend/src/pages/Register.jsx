@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 function Register() {
   const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -20,6 +21,7 @@ function Register() {
     try {
       const res = await axios.post('http://localhost:5000/api/auth/register', {
         username,
+        email,
         password
       });
       setMessage(res.data.message);
@@ -30,59 +32,31 @@ function Register() {
   };
 
   return (
-    <form
-      onSubmit={handleRegister}
-      className='flex flex-col items-center justify-center px-6 py-8 mx-auto h-screen'
-    >
-      <div className='w-full bg-white rounded-lg shadow border sm:max-w-md p-6 space-y-6'>
-        <h2 className='text-xl font-bold text-gray-900'>Créer un compte</h2>
+    <div className='flex items-center justify-center min-h-screen bg-gray-100'>
+      <form onSubmit={handleRegister} className='w-full max-w-md p-8 bg-white rounded-xl shadow-lg space-y-6'>
+        <h2 className='text-2xl font-bold text-center text-gray-800'>Créer un compte</h2>
 
         <div>
-          <label className='block mb-2 text-sm font-medium text-gray-900'>Nom d'utilisateur</label>
-          <input
-            type='text'
-            value={username}
-            onChange={e => setUsername(e.target.value)}
-            placeholder=''
-            className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5'
-            required
-          />
-        </div>
+          <label className='block mb-1 text-sm font-medium text-gray-700'>Nom d'utilisateur</label>
+          <input type='text' value={username} onChange={e => setUsername(e.target.value)} className='w-full px-4 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500' placeholder='Votre nom d\utilisateur' required /></div>
 
         <div>
-          <label className='block mb-2 text-sm font-medium text-gray-900'>Mot de passe</label>
-          <input
-            type='password'
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            placeholder='••••••••'
-            className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5'
-            required
-          />
-        </div>
+          <label className='block mb-1 text-sm font-medium text-gray-700'>Email</label>
+          <input type='email' value={email} onChange={e => setEmail(e.target.value)} className='w-full px-4 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500' placeholder='vous@example.com' required /></div>
 
         <div>
-          <label className='block mb-2 text-sm font-medium text-gray-900'>Confirmer le mot de passe</label>
-          <input
-            type='password'
-            value={confirmPassword}
-            onChange={e => setConfirmPassword(e.target.value)}
-            placeholder='••••••••'
-            className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg w-full p-2.5'
-            required
-          />
-        </div>
+          <label className='block mb-1 text-sm font-medium text-gray-700'>Mot de passe</label>
+          <input type='password' value={password} onChange={e => setPassword(e.target.value)} className='w-full px-4 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500' placeholder='••••••••' required /></div>
 
-        <button
-          type='submit'
-          className='w-full bg-blue-500 hover:bg-blue-700 text-white font-medium rounded-lg text-sm px-5 py-2.5'
-        >
-          Créer un compte
-        </button>
+        <div>
+          <label className='block mb-1 text-sm font-medium text-gray-700'>Confirmer le mot de passe</label>
+          <input type='password' value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} className='w-full px-4 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500' placeholder='••••••••' required /></div>
+
+        <button type='submit' className='w-full py-3 text-sm font-bold text-white uppercase rounded-lg bg-gradient-to-r from-cyan-600 to-cyan-400 hover:from-cyan-700 hover:to-cyan-500 transition-all'>Créer un compte</button>
 
         {message && <p className='text-sm text-center text-red-500'>{message}</p>}
-      </div>
-    </form>
+      </form>
+    </div>
   );
 }
 
