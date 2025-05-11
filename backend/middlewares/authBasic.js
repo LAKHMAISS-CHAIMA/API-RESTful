@@ -4,18 +4,13 @@ const bcrypt = require("bcrypt");
 const authBasic = async (req, res, next) => {
   const auth = req.headers.authorization;
 
-  if (!auth) {
-    return res.status(401).json({ message: "No credentials provided" });
-  }
-
-  const parts = auth.split(" ");
-
-  if (parts.length !== 2 || parts[0] !== "Basic") {
-    return res.status(400).json({ message: "Bad format" });
+  if (!auth || !auth.startsWith("Basic ")) {
+    return res.status(401).json({ message: "No or bad credentials format" });
   }
 
   try {
-    const credentials = Buffer.from(parts[1], 'base64').toString('utf-8');
+    const base64Credentials = auth.split(" ")[1];
+    const credentials = Buffer.from(base64Credentials, 'base64').toString('utf-8');
     const [username, password] = credentials.split(':');
 
     if (!username || !password) {
@@ -23,7 +18,6 @@ const authBasic = async (req, res, next) => {
     }
 
     const user = await User.findOne({ username });
-
     if (!user) {
       return res.status(401).json({ message: "Wrong username or password" });
     }
@@ -36,8 +30,8 @@ const authBasic = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
-    console.error("Auth error:", error);
-    return res.status(500).json({ message: "Authentication error" });
+    console.error("Auth Basic error:", error);
+    res.status(500).json({ message: "Authentication error" });
   }
 };
 
