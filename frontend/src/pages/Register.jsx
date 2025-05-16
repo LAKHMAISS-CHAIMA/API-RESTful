@@ -1,72 +1,115 @@
-import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { registerSchema } from '../validation/authValidation';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 const Register = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    role: 'user',
+  const navigate = useNavigate();
+  const [message, setMessage] = useState('');
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm({
+    resolver: yupResolver(registerSchema)
   });
 
-  const [message, setMessage] = useState('');
-  const navigate = useNavigate();
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const onSubmit = (data) => {
     const users = JSON.parse(localStorage.getItem('users')) || [];
 
-    const emailExists = users.some((u) => u.email === formData.email);
+    const emailExists = users.some((u) => u.email === data.email);
     if (emailExists) {
-      setMessage('Cet email est déjà utilisé.');
+      setMessage('This email is already in use.');
       return;
     }
 
-    users.push(formData);
+    users.push(data);
     localStorage.setItem('users', JSON.stringify(users));
-    setMessage('Inscription réussie ! Redirection...');
+    setMessage('Registration successful! Redirecting...');
     setTimeout(() => navigate('/login'), 1500);
   };
 
   return (
     <div className='flex flex-col items-center justify-center min-h-screen bg-gray-100'>
-      <form onSubmit={handleSubmit} className='relative flex w-96 flex-col rounded-xl bg-white text-gray-700 shadow-md mx-auto my-10 px-6 py-8'>
-        <h2 className='text-3xl font-semibold text-center mb-6'>Créer un compte</h2>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className='relative flex w-96 flex-col rounded-xl bg-white text-gray-700 shadow-md mx-auto my-10 px-6 py-8'
+      >
+        <h2 className='text-3xl font-semibold text-center mb-6'>Create Account</h2>
 
         <div className='mb-4'>
-          <label className='block mb-2 text-sm font-medium text-gray-900'>Nom</label>
-          <input name='name' type='text' value={formData.name} onChange={handleChange} placeholder='Votre nom' className='w-full rounded-md border border-blue-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500' required /></div>
+          <label className='block mb-2 text-sm font-medium text-gray-900'>Username</label>
+          <input
+            {...register('username')}
+            type='text'
+            placeholder='Your username'
+            className='w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500'
+          />
+          {errors.username && <p className='text-red-500 text-sm'>{errors.username.message}</p>}
+        </div>
 
         <div className='mb-4'>
           <label className='block mb-2 text-sm font-medium text-gray-900'>Email</label>
-          <input name='email' type='email' value={formData.email} onChange={handleChange} placeholder='vous@example.com' className='w-full rounded-md border border-blue-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500' required /></div>
+          <input
+            {...register('email')}
+            type='email'
+            placeholder='you@example.com'
+            className='w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500'
+          />
+          {errors.email && <p className='text-red-500 text-sm'>{errors.email.message}</p>}
+        </div>
 
         <div className='mb-4'>
-          <label className='block mb-2 text-sm font-medium text-gray-900'>Mot de passe</label>
-          <input name='password' type='password' value={formData.password} onChange={handleChange} placeholder='••••••••' className='w-full rounded-md border border-blue-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500' required /></div>
+          <label className='block mb-2 text-sm font-medium text-gray-900'>Password</label>
+          <input
+            {...register('password')}
+            type='password'
+            placeholder='••••••••'
+            className='w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500'
+          />
+          {errors.password && <p className='text-red-500 text-sm'>{errors.password.message}</p>}
+        </div>
+
+        <div className='mb-4'>
+          <label className='block mb-2 text-sm font-medium text-gray-900'>Confirm Password</label>
+          <input
+            {...register('confirmPassword')}
+            type='password'
+            placeholder='••••••••'
+            className='w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500'
+          />
+          {errors.confirmPassword && <p className='text-red-500 text-sm'>{errors.confirmPassword.message}</p>}
+        </div>
 
         <div className='mb-6'>
-          <label className='block mb-2 text-sm font-medium text-gray-900'>Rôle</label>
-          <select name='role' value={formData.role} onChange={handleChange} className='w-full rounded-md border border-blue-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500'>
+          <label className='block mb-2 text-sm font-medium text-gray-900'>Role</label>
+          <select
+            {...register('role')}
+            defaultValue='user'
+            className='w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500'
+          >
             <option value='user'>User</option>
             <option value='admin'>Admin</option>
           </select>
+          {errors.role && <p className='text-red-500 text-sm'>{errors.role.message}</p>}
         </div>
 
-        <button type='submit' className='block w-full rounded-lg bg-gradient-to-tr from-cyan-600 to-cyan-400 py-3 text-xs font-bold uppercase text-white shadow-md hover:shadow-lg'> S'inscrire</button>
-
+        <button
+          type='submit'
+          className='block w-full rounded-lg bg-gradient-to-tr from-cyan-600 to-cyan-400 py-3 text-xs font-bold uppercase text-white shadow-md hover:shadow-lg'
+        >
+          Register
+        </button>
         {message && <p className='text-sm text-center text-cyan-600 mt-4'>{message}</p>}
 
-        <p className='mt-6 text-center text-sm font-light'> Vous avez déjà un compte ?
-          <a href='/login' className='ml-1 font-bold text-cyan-500 hover:underline'>Se connecter</a></p>
+        <p className='mt-6 text-center text-sm font-light'>
+          Already have an account?
+          <a href='/login' className='ml-1 font-bold text-cyan-500 hover:underline'>
+            Login
+          </a>
+        </p>
       </form>
     </div>
   );

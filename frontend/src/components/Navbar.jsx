@@ -13,23 +13,23 @@ const Navbar = ({ user, handleLogout }) => {
 
         <div className="flex flex-col md:flex-row md:space-x-6 space-y-2 md:space-y-0 items-center">
           
-          {user?.role === 'user' && (
+          {/* {user?.role === 'user' && ( */}
             <Link
               to="/user"
               className="text-lg font-medium hover:text-cyan-200"
             >
               User
             </Link>
-          )}
+          {/* )} */}
 
-          {user?.role === 'admin' && (
+          {/* {user?.role === 'admin' && ( */}
             <Link
               to="/admin"
               className="text-lg font-medium hover:text-cyan-200"
             >
               Admin
             </Link>
-          )}
+          {/* )} */}
 
             <Link
               to="/login"

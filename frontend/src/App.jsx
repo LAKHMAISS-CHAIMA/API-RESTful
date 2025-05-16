@@ -4,6 +4,8 @@ import Register from './pages/Register';
 import Home from './pages/Home';
 import User from './pages/User';
 import Admin from './pages/Admin';
+import Contact from './pages/contact';
+
 import Navbar from './components/Navbar';
 import { useEffect, useState } from 'react';
 import { Toaster } from "react-hot-toast";
@@ -41,6 +43,8 @@ function App() {
             path='/'
             element={<Navigate to={user ? (user.role === 'admin' ? '/admin' : '/user') : '/login'} />}
           />
+          <Route path="/contact" element={<Contact />} />
+
           <Route
             path='/login'
             element={!user ? <Login setUser={setUser} /> : <Navigate to={user.role === 'admin' ? '/admin' : '/user'} />}

@@ -12,7 +12,14 @@ const authJWT = require("./middlewares/authJWT");
 const authSession = require("./middlewares/authSession");
 
 const PORT = process.env.PORT || 8000;
-
+const nodemailer = require("nodemailer");
+const transporter = nodemailer.createTransport({
+ service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  },
+});
 connectDB();
 
 app.use(cors({

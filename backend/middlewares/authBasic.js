@@ -21,6 +21,21 @@ const authBasic = async (req, res, next) => {
     if (!user) {
       return res.status(401).json({ message: "Wrong username or password" });
     }
+    // router.get('/user',async(req,res)=>{
+    //   const user= await User.find();
+    //   const userNumber =user .length;
+    // res.status(201).json({userNumber})
+
+    // })
+  //  router.get('/user',async(req,res)=>{
+  //     const user= await User.find();
+  //     const filtred = filter.User.filter((user) => user.username === username);
+  //     const userName =filtred .length;
+  //     const userNumber =user .length;
+  //   res.status(201).json({userNumber})
+
+  //   })
+
 
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) {
